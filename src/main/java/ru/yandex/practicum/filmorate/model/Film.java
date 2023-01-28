@@ -13,12 +13,14 @@ import java.time.LocalDate;
 @Builder
 public class Film {
 
+    private static final int SIZE = 200;
+
     private int id;
 
     @NotEmpty(message = "Имя не может быть пустым")
     private String name;
 
-    @Size(max = 200, message = "Максимальная длина описания 200 символов")
+    @Size(max = SIZE, message = "Максимальная длина описания 200 символов")
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
