@@ -19,10 +19,6 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private Integer id = 0;
 
-    private Integer generateId() {
-        id++;
-        return id;
-    }
 
     @GetMapping
     public List<User> getUsers() {
@@ -40,18 +36,24 @@ public class UserController {
         users.put(idUser,user);
         return user;
     }
-
     @PutMapping
     public User updateUser(@Valid @RequestBody User user){
         log.info("Обновление пользователя");
-        if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Такого пользователя не существует");
-        }
+        validId(user);
         if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         users.put(user.getId(),user);
         return user;
+    }
+
+    private Integer generateId() {
+        return ++id;
+    }
+    private void validId(User user){
+        if (!users.containsKey(user.getId())) {
+            throw new ValidationException("Такого пользователя не существует");
+        }
     }
 
 

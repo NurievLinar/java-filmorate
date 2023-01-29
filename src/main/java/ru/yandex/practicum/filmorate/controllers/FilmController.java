@@ -28,9 +28,7 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film){
-        if (validDate(film)){
-            throw new ValidationException("дата релиза — раньше 28 декабря 1895 года;");
-        }
+        validDate(film);
         log.info("Добавление фильма");
         int idFilm = generateId();
         film.setId(idFilm);
@@ -41,24 +39,25 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film){
         log.info("Обновление фильма");
-        if (validId(film)) {
-            throw new ValidationException("Такого фильма не существует");
-        }
+        validId(film);
         films.put(film.getId(), film);
         return film;
     }
 
     private Integer generateId() {
-        id++;
-        return id;
+        return ++id;
     }
 
-    private boolean validDate (Film film) {
-        return film.getReleaseDate().isBefore(DATE);
+    private void validDate (Film film) {
+        if (film.getReleaseDate().isBefore(DATE)) {
+            throw new ValidationException("дата релиза — раньше 28 декабря 1895 года;");
+        }
     }
 
-    private boolean validId (Film film) {
-        return !films.containsKey(film.getId());
+    private void validId (Film film) {
+        if (!films.containsKey(film.getId())) {
+            throw new ValidationException("Такого фильма не существует");
+        }
     }
 
 }

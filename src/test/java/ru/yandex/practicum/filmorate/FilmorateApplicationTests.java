@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
 import ru.yandex.practicum.filmorate.controllers.UserController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+
 import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +22,7 @@ class FilmorateApplicationTests {
 	}
 
 	@Test
-	void addFilm () throws ValidationException {
+	void addFilm () {
 		Film film = Film.builder()
 				.name("Name")
 				.description("description")
@@ -35,7 +35,7 @@ class FilmorateApplicationTests {
 	}
 
 	@Test
-	void addUser() throws ValidationException {
+	void addUser() {
 		User user = User.builder()
 				.email("email@email.ru")
 				.login("Login")
