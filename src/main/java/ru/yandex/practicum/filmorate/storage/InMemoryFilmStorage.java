@@ -57,13 +57,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     private void validDate(Film film) {
         if (film.getReleaseDate().isBefore(DATE)) {
-            throw new ValidationException("дата релиза — раньше 28 декабря 1895 года;");
+            throw new ValidationException("дата релиза — раньше, чем " + DATE);
         }
     }
 
     private void validId(Integer id) {
         if (!films.containsKey(id)) {
-            throw new NotFoundException("Такого фильма не существует");
+            throw new NotFoundException(String.format("Фильм с id = %s не найден", id));
         }
     }
 
