@@ -1,59 +1,81 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@AllArgsConstructor
 public class UserService {
 
-    UserStorage userStorage;
+    UserStorage userDbStorage;
+
+    @Autowired
+    public UserService(UserDbStorage userDbStorage) {
+        this.userDbStorage = userDbStorage;
+    }
 
     public List<User> getUsers() {
-        return userStorage.getUsers();
+        return userDbStorage.getUsers();
     }
 
     public User getUserById(Integer id) {
-        return userStorage.getById(id);
+        if (id < 1000 && id > 0) {
+            return userDbStorage.getById(id).orElseThrow(()->new NotFoundException("Такого пользователя нет"));
+        } else {
+            throw new NotFoundException("Пользователь не найден.");
+        }
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        user.setId(userDbStorage.addUser(user));
+        return user;
     }
 
-    public User updateUser(User user) {
-        return userStorage.updateUser(user);
+    public void update(User user) {
+        getUserById(user.getId());
+        userDbStorage.updateUser(user);
     }
 
-    public void addFriend(Integer idUser, Integer idFriend) {
-        userStorage.getById(idUser).addFriend(idFriend);
-        userStorage.getById(idFriend).addFriend(idUser);
+    public boolean addFriend(Integer idUser, Integer idFriend) {
+        getUserById(idUser);
+        getUserById(idFriend);
+        return userDbStorage.addRequestsFriendship(idUser, idFriend);
     }
 
     public void deleteFriend(Integer idUser, Integer idFriend) {
-        userStorage.getById(idUser).deleteFriend(idFriend);
-        userStorage.getById(idFriend).deleteFriend(idUser);
+        getUserById(idUser);
+        getUserById(idFriend);
+        if (!userDbStorage.deleteFriends(idUser, idFriend)) {
+            throw new NotFoundException("Не удалось удалить пользователя из друзей");
+        }
     }
 
     public List<User> getUserFriends(Integer idUser) {
+        getUserById(idUser);
+        List<Integer> idFriends = userDbStorage.findAllFriends(idUser);
         List<User> friends = new ArrayList<>();
-        for (Integer friendId : userStorage.getById(idUser).getFriends()) {
-            friends.add(userStorage.getById(friendId));
+        for (Integer friendId : idFriends) {
+            friends.add(getUserById(friendId));
         }
         return friends;
     }
 
     public List<User> getCommonFriend(Integer idUser, Integer idFriend) {
+        getUserById(idUser);
+        getUserById(idFriend);
         List<User> commonFriend = new ArrayList<>();
-        for (Integer idFriendUser : userStorage.getById(idUser).getFriends()) {
-            if (userStorage.getById(idFriend).getFriends().contains(idFriendUser)) {
-                commonFriend.add(userStorage.getById(idFriendUser));
-            }
+        Set<Integer> common = new HashSet<>(userDbStorage.findAllFriends(idUser));
+        common.retainAll(userDbStorage.findAllFriends(idFriend));
+        for (Integer idFriendUser : common) {
+            commonFriend.add(getUserById(idFriendUser));
         }
         return commonFriend;
     }

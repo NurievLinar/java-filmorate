@@ -2,14 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.validator.FilmValid;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Film {
@@ -25,6 +24,7 @@ public class Film {
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @FilmValid
     private LocalDate releaseDate;
 
     @Positive
@@ -32,36 +32,40 @@ public class Film {
 
     private Integer rating;
 
-    Set<Integer> usersLikedFilm = new HashSet<>();
+    private Mpa mpa;
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, Integer rating) {
+    private List<Genre> genres;
+
+    Integer rateAndLikes;
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Integer rate,
+                Mpa mpa, List<Genre> genres) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        if (rating == null || rating < 0) {
-            this.rating = 0;
+        if (rate != null) {
+            this.rating = rate;
         } else {
-            this.rating = rating;
+            this.rating = 0;
+        }
+        this.mpa = mpa;
+        if (genres == null) {
+            this.genres = new ArrayList<>();
+        } else {
+            this.genres = genres;
         }
     }
 
-    public void addLike(Integer idUser) {
-        validIdUser(idUser);
-        usersLikedFilm.add(idUser);
-        rating = rating + usersLikedFilm.size();
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("FILM_NAME", name);
+        values.put("FILM_DESCRIPTION", description);
+        values.put("FILM_RELEASE_DATE", releaseDate);
+        values.put("FILM_DURATION", duration);
+        values.put("FILM_RATE", rating);
+        values.put("MPA_ID", mpa.getId());
+        values.put("FILM_RATE_AND_LIKES", rateAndLikes);
+        return values;
     }
-
-    public void deleteLike(Integer idUser) {
-        validIdUser(idUser);
-        rating = rating - usersLikedFilm.size();
-        usersLikedFilm.remove(idUser);
-    }
-
-    private void validIdUser(Integer id) {
-        if (id < 0) {
-            throw new NotFoundException("Неверный Id пользователя");
-        }
-    }
-
 }

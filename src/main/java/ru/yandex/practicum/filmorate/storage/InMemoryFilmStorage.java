@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    public static final LocalDate DATE = LocalDate.of(1895, 12, 28);
+    //public static final LocalDate DATE = LocalDate.of(1895, 12, 28);
     private final Map<Integer, Film> films = new HashMap<>();
 
     private Integer id = 0;
@@ -35,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        validDate(film);
+        //validDate(film);
         log.info("Добавление фильма");
         int idFilm = generateId();
         film.setId(idFilm);
@@ -55,11 +56,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++id;
     }
 
-    private void validDate(Film film) {
+*/
+/*    private void validDate(Film film) {
         if (film.getReleaseDate().isBefore(DATE)) {
             throw new ValidationException("дата релиза — раньше, чем " + DATE);
         }
-    }
+    }*//*
+
 
     private void validId(Integer id) {
         if (!films.containsKey(id)) {
@@ -68,3 +71,4 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 }
+*/

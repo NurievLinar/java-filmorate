@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -28,9 +30,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable int id) {
+    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         log.info("Получение пользователя");
-        return userService.getUserById(id);
+        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
     @PostMapping
@@ -40,34 +42,34 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         log.info("Обновление пользователя");
-        return userService.updateUser(user);
+        userService.update(user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User putUserFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        log.info("Добавление друга");
-        userService.addFriend(id, friendId);
-        return userService.getUsers().get(id);
+    public ResponseEntity<Boolean> addUserFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        log.info("Добавление в друзья");
+        return new ResponseEntity<>(userService.addFriend(id, friendId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void deleteUserFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public ResponseEntity<User> deleteUserFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Удаление из друзей.");
         userService.deleteFriend(id, friendId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getUserFriends(@PathVariable Integer id) {
+    public ResponseEntity<List<User>> getUserFriends(@PathVariable Integer id) {
         log.info("Получение списка друзей.");
-        return userService.getUserFriends(id);
+        return new ResponseEntity<>(userService.getUserFriends(id), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonUsersFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+    public ResponseEntity<List<User>> getCommonUsersFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         log.info("Получение списка общих друзей.");
-        return userService.getCommonFriend(id, otherId);
+        return new ResponseEntity<>(userService.getCommonFriend(id, otherId), HttpStatus.OK);
     }
-
 }
