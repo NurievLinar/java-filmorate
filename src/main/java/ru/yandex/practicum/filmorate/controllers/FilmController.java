@@ -53,7 +53,6 @@ public class FilmController {
     public ResponseEntity addLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Ставим лайк фильму.");
         filmService.addLikeFilm(id, userId);
-        //return filmService.getById(id);
         return new ResponseEntity(HttpStatus.OK);
     }
 
