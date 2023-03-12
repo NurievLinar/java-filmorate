@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -17,13 +17,9 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class FilmDbStorage implements FilmStorage{
+@AllArgsConstructor
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Integer addFilm(Film film) {
@@ -184,7 +180,7 @@ public class FilmDbStorage implements FilmStorage{
                 , resultSet.getDate("FILM_RELEASE_DATE").toLocalDate()
                 , resultSet.getInt("FILM_DURATION")
                 , resultSet.getInt("FILM_RATE")
-                , new Mpa(resultSet.getInt("MPA_ID") , resultSet.getString("MPA_NAME"))
+                , new Mpa(resultSet.getInt("MPA_ID"), resultSet.getString("MPA_NAME"))
                 , new ArrayList<>());
         film.setId(resultSet.getInt("FILM_ID"));
         film.setRateAndLikes(getRateAndLikeFilm(film.getId()));

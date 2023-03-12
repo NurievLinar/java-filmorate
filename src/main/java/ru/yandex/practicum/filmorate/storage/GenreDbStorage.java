@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -14,14 +14,10 @@ import java.util.List;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public String getById(Integer id) {
@@ -44,7 +40,7 @@ public class GenreDbStorage implements GenreStorage {
         List<Integer> idGenres = jdbcTemplate.queryForList(sqlQuery, Integer.class);
         List<Genre> genres = new ArrayList<>();
         for (Integer id : idGenres) {
-            genres.add(new Genre(id,getById(id)));
+            genres.add(new Genre(id, getById(id)));
         }
 
         return genres;

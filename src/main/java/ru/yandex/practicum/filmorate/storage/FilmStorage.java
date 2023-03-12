@@ -16,6 +16,7 @@ public interface FilmStorage {
     Integer addFilm(Film film);
 
     void updateFilm(Film film);
+
     boolean setGenre(Integer idFilm, Integer idGenre);
 
     boolean deleteGenre(Integer idFilm, Integer idGenre);

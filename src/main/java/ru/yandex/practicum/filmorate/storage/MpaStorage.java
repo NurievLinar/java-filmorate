@@ -8,5 +8,6 @@ import java.util.List;
 @Component
 public interface MpaStorage {
     List<Mpa> getAll();
+
     String getById(Integer id);
 }

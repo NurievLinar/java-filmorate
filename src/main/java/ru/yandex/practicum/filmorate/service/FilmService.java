@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,18 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class FilmService {
+
+    private static final int LIMIT = 9000;
 
     final FilmStorage filmDbStorage;
     final MpaService mpaService;
     final GenreService genreService;
 
-    @Autowired
-    public FilmService(FilmStorage filmDbStorage, MpaService mpaService, GenreService genreService) {
-        this.filmDbStorage = filmDbStorage;
-        this.mpaService = mpaService;
-        this.genreService = genreService;
-    }
 
     public List<Film> getFilms() {
         var result = filmDbStorage.getFilms();
@@ -33,7 +30,7 @@ public class FilmService {
     }
 
     public Film getById(Integer id) {
-        if (id < 9900) {
+        if (id < LIMIT) {
             var result = filmDbStorage.getById(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id = %s не найден", id)));
             result.setGenres(genreService.getGenresId(result.getId()));
             return result;

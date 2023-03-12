@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -13,22 +12,20 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    UserStorage userDbStorage;
+    private static final int LIMIT = 1000;
 
-    @Autowired
-    public UserService(UserDbStorage userDbStorage) {
-        this.userDbStorage = userDbStorage;
-    }
+    UserStorage userDbStorage;
 
     public List<User> getUsers() {
         return userDbStorage.getUsers();
     }
 
     public User getUserById(Integer id) {
-        if (id < 1000 && id > 0) {
-            return userDbStorage.getById(id).orElseThrow(()->new NotFoundException("Такого пользователя нет"));
+        if (id < LIMIT && id > 0) {
+            return userDbStorage.getById(id).orElseThrow(() -> new NotFoundException("Такого пользователя нет"));
         } else {
             throw new NotFoundException("Пользователь не найден.");
         }
