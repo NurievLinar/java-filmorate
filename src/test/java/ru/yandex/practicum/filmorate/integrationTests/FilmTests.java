@@ -19,9 +19,6 @@ import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -110,7 +107,6 @@ class FilmTests {
 
     void checkFindFilmById(Integer idFilm) {
         Film filmOptional = filmDbStorage.getById(idFilm);
-
 
         assertEquals(filmOptional.getId(),idFilm);
 
