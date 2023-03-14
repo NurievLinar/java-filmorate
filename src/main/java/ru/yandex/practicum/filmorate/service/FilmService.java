@@ -4,17 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class FilmService {
-
-    private static final int LIMIT = 9000;
 
     final FilmStorage filmDbStorage;
     final MpaService mpaService;
@@ -30,26 +26,18 @@ public class FilmService {
     }
 
     public Film getById(Integer id) {
-        if (id < LIMIT) {
-            var result = filmDbStorage.getById(id).orElseThrow(() -> new NotFoundException(String.format("Фильм с id = %s не найден", id)));
-            result.setGenres(genreService.getGenresId(result.getId()));
-            return result;
-        } else {
-            throw new NotFoundException("Пользователь не найден.");
-        }
+        Film film = filmDbStorage.getById(id);
+        film.setGenres(genreService.getGenresId(film.getId()));
+        return film;
     }
 
     public Film addFilm(Film film) {
         film.setId(filmDbStorage.addFilm(film));
         film.setMpa(mpaService.getById(film.getMpa().getId()));
-        List<Genre> actualGenreFilm = new ArrayList<>();
-        for (Genre genre : film.getGenres()) {
-            actualGenreFilm.add(genreService.getById(genre.getId()));
-            if (!filmDbStorage.setGenre(film.getId(), genre.getId())) {
-                throw new NotFoundException("Не удалось установить жанр для фильма");
-            }
+        if (film.getGenres() == null || film.getGenres().isEmpty()) {
+            return film;
         }
-        film.setGenres(actualGenreFilm);
+        filmDbStorage.insertFilmGenre(film);
         return film;
     }
 
@@ -57,23 +45,6 @@ public class FilmService {
         getById(film.getId());
         filmDbStorage.updateFilm(film);
         film.setMpa(mpaService.getById(film.getMpa().getId()));
-        List<Genre> actualGenreFilm = new ArrayList<>();
-        for (Genre genre : film.getGenres()) {
-            if (!actualGenreFilm.contains(genreService.getById(genre.getId()))) {
-                actualGenreFilm.add(genreService.getById(genre.getId()));
-            }
-            if (!filmDbStorage.setGenre(film.getId(), genre.getId())) {
-                throw new NotFoundException("Не удалось установить жанр для фильма");
-            }
-        }
-
-        List<Genre> currentGenreFilm = genreService.getGenresId(film.getId());
-        for (Genre current : currentGenreFilm) {
-            if (!actualGenreFilm.contains(current)) {
-                filmDbStorage.deleteGenre(film.getId(), current.getId());
-            }
-        }
-        film.setGenres(actualGenreFilm);
     }
 
     public void addLikeFilm(Integer filmId, Integer userId) {

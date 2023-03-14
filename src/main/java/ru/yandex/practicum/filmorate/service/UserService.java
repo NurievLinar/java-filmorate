@@ -15,8 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserService {
 
-    private static final int LIMIT = 1000;
-
     UserStorage userDbStorage;
 
     public List<User> getUsers() {
@@ -24,11 +22,7 @@ public class UserService {
     }
 
     public User getUserById(Integer id) {
-        if (id < LIMIT && id > 0) {
-            return userDbStorage.getById(id).orElseThrow(() -> new NotFoundException("Такого пользователя нет"));
-        } else {
-            throw new NotFoundException("Пользователь не найден.");
-        }
+        return userDbStorage.getById(id);
     }
 
     public User addUser(User user) {
