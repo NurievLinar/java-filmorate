@@ -12,9 +12,19 @@ public interface FilmStorage {
 
     Film getById(Integer id);
 
-    Film addFilm(Film film);
+    Integer addFilm(Film film);
 
     Film updateFilm(Film film);
 
+    boolean setGenre(Integer idFilm, Integer idGenre);
 
+    boolean deleteGenre(Integer idFilm, Integer idGenre);
+
+    boolean addLike(Integer idFilm, Integer idUser);
+
+    List<Film> mostPopulars(Integer limit);
+
+    boolean deleteLike(Integer idFilm, Integer idUser);
+
+    Film insertFilmGenre(Film film);
 }
