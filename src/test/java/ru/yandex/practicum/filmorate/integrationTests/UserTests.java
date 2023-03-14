@@ -9,12 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
-
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,22 +55,14 @@ class UserTests {
         updateUser.setId(1);
         userStorage.updateUser(updateUser);
 
-        Optional<User> userStorageUser = userStorage.getById(1);
+        User userStorageUser = userStorage.getById(1);
 
-        Map<String, Object> mapForCheck = new HashMap<>();
-        mapForCheck.put("id", updateUser.getId());
-        mapForCheck.put("email", updateUser.getEmail());
-        mapForCheck.put("login", updateUser.getLogin());
-        mapForCheck.put("name", updateUser.getName());
-        mapForCheck.put("birthday", updateUser.getBirthday());
+        assertEquals(updateUser.getId(),userStorageUser.getId());
+        assertEquals(updateUser.getName(),userStorageUser.getName());
+        assertEquals(updateUser.getEmail(),userStorageUser.getEmail());
+        assertEquals(updateUser.getLogin(),userStorageUser.getLogin());
+        assertEquals(updateUser.getBirthday(),userStorageUser.getBirthday());
 
-        for (Map.Entry<String, Object> entry : mapForCheck.entrySet()) {
-            assertThat(userStorageUser)
-                    .isPresent()
-                    .hasValueSatisfying(user ->
-                            assertThat(user).hasFieldOrPropertyWithValue(entry.getKey(), entry.getValue())
-                    );
-        }
     }
 
     @Test
@@ -108,12 +96,9 @@ class UserTests {
     }
 
     void checkFindUserById(Integer idUser) {
-        Optional<User> userStorageById = userStorage.getById(idUser);
+        User userStorageById = userStorage.getById(idUser);
 
-        assertThat(userStorageById)
-                .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", idUser)
-                );
+        assertEquals(userStorageById.getId(),idUser);
+
     }
 }

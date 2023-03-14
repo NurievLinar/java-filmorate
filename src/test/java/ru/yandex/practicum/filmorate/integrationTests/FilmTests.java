@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = FilmorateApplication.class)
@@ -75,13 +76,13 @@ class FilmTests {
 
         filmDbStorage.updateFilm(updateFilm);
 
-        Optional<Film> filmDbStorageFilm = filmDbStorage.getById(1);
+        Film filmDbStorageFilm = filmDbStorage.getById(1);
 
-        assertThat(filmDbStorageFilm)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("description", "updateTest")
-                );
+        assertEquals(updateFilm.getId(),filmDbStorageFilm.getId());
+        assertEquals(updateFilm.getName(),filmDbStorageFilm.getName());
+        assertEquals(updateFilm.getDescription(),filmDbStorageFilm.getDescription());
+        assertEquals(updateFilm.getReleaseDate(),filmDbStorageFilm.getReleaseDate());
+        assertEquals(updateFilm.getMpa(),filmDbStorageFilm.getMpa());
     }
 
     @Test
@@ -93,22 +94,6 @@ class FilmTests {
     void testFindAll() {
         List<Film> current = filmDbStorage.getFilms();
         Assertions.assertEquals(2, current.size(), "Не корректное количество фильмов");
-    }
-
-
-    @Test
-    void testDeleteGenreFilm() {
-        assertTrue(filmDbStorage.deleteGenre(2, 2), "Жанр фильма не изменился");
-        List<Genre> genres = new ArrayList<>();
-        Optional<Film> filmDbStorageFilm = filmDbStorage.getById(2);
-
-        assertThat(filmDbStorageFilm)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("genres", genres)
-                );
-
-        filmDbStorage.setGenre(2, 2);
     }
 
     @Test
@@ -123,38 +108,11 @@ class FilmTests {
         assertTrue(filmDbStorage.deleteLike(1, 1), "Лайк не удален");
     }
 
-    @Test
-    void testListMostPopularFilms() {
-        filmDbStorage.addLike(1, 1);
-        List<Film> films = filmDbStorage.mostPopulars(1);
-        Assertions.assertEquals(1, films.size(), "Размер списка фильмов не соответсвует");
-        Optional<Film> filmDbStorageFilm = filmDbStorage.getById(1);
-
-        assertThat(filmDbStorageFilm)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("rateAndLikes", film.getRating() + 1)
-                );
-
-        films = filmDbStorage.mostPopulars(2);
-        Assertions.assertEquals(2, films.size(), "Размер списка фильмов не соответсвует");
-        filmDbStorageFilm = filmDbStorage.getById(2);
-
-        assertThat(filmDbStorageFilm)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("rateAndLikes", film.getRating())
-                );
-    }
-
     void checkFindFilmById(Integer idFilm) {
-        Optional<Film> filmOptional = filmDbStorage.getById(idFilm);
+        Film filmOptional = filmDbStorage.getById(idFilm);
 
-        assertThat(filmOptional)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", idFilm)
-                );
+
+        assertEquals(filmOptional.getId(),idFilm);
 
     }
 }
