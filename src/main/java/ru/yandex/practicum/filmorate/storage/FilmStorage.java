@@ -27,4 +27,5 @@ public interface FilmStorage {
     boolean deleteLike(Integer idFilm, Integer idUser);
 
     Film insertFilmGenre(Film film);
+
 }

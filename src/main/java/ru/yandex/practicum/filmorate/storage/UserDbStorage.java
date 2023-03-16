@@ -109,4 +109,21 @@ public class UserDbStorage implements UserStorage {
 
         return user;
     }
+
+    @Override
+    public List<User> getUserFriends(Integer idUser) {
+        final String q = "SELECT u.* FROM FRIENDSHIP_REQUESTS f INNER JOIN USERS u ON f.RECIPIENT_ID = u.USER_ID WHERE f.SENDER_ID = ?";
+        return jdbcTemplate.query(q, this::mapRowToUser, idUser);
+    }
+
+    @Override
+    public List<User> getCommonFriend(Integer id, Integer otherId) {
+        final String q = "SELECT u.* FROM (" +
+                "SELECT RECIPIENT_ID FROM FRIENDSHIP_REQUESTS WHERE SENDER_ID = ? INTERSECT " +
+                "SELECT RECIPIENT_ID FROM FRIENDSHIP_REQUESTS WHERE SENDER_ID = ?" +
+                ") f INNER JOIN USERS u ON f.RECIPIENT_ID = u.USER_ID";
+        return jdbcTemplate.query(q, this::mapRowToUser, id, otherId);
+    }
+
+
 }
