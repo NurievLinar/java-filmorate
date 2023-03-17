@@ -20,14 +20,14 @@ public class FilmService {
     public List<Film> getFilms() {
         var result = filmDbStorage.getFilms();
         for (Film film : result) {
-            film.setGenres(genreService.getGenresId(film.getId()));
+            film.setGenres(genreService.getGenresByFilmId(film.getId()));
         }
         return result;
     }
 
-    public Film getById(Integer id) {
-        Film film = filmDbStorage.getById(id);
-        film.setGenres(genreService.getGenresId(film.getId()));
+    public Film getFilmById(Integer id) {
+        Film film = filmDbStorage.getFilmById(id);
+        film.setGenres(genreService.getGenresByFilmId(film.getId()));
         return film;
     }
 
@@ -42,7 +42,7 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
-        getById(film.getId());
+        getFilmById(film.getId());
         filmDbStorage.updateFilm(film);
         film.setMpa(mpaService.getById(film.getMpa().getId()));
     }

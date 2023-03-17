@@ -100,16 +100,6 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class) == 1;
     }
 
-    private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        User user = new User(resultSet.getString("USER_EMAIL")
-                , resultSet.getString("USER_LOGIN")
-                , resultSet.getString("USER_NAME")
-                , resultSet.getDate("USER_BIRTHDAY").toLocalDate());
-        user.setId(resultSet.getInt("USER_ID"));
-
-        return user;
-    }
-
     @Override
     public List<User> getUserFriends(Integer idUser) {
         final String q = "SELECT u.* FROM FRIENDSHIP_REQUESTS f INNER JOIN USERS u ON f.RECIPIENT_ID = u.USER_ID WHERE f.SENDER_ID = ?";
@@ -123,6 +113,16 @@ public class UserDbStorage implements UserStorage {
                 "SELECT RECIPIENT_ID FROM FRIENDSHIP_REQUESTS WHERE SENDER_ID = ?" +
                 ") f INNER JOIN USERS u ON f.RECIPIENT_ID = u.USER_ID";
         return jdbcTemplate.query(q, this::mapRowToUser, id, otherId);
+    }
+
+    private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+        User user = new User(resultSet.getString("USER_EMAIL")
+                , resultSet.getString("USER_LOGIN")
+                , resultSet.getString("USER_NAME")
+                , resultSet.getDate("USER_BIRTHDAY").toLocalDate());
+        user.setId(resultSet.getInt("USER_ID"));
+
+        return user;
     }
 
 

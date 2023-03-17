@@ -20,7 +20,7 @@ public class GenreService {
         return genreDbStorage.getAll();
     }
 
-    public List<Genre> getGenresId(Integer id) {
-        return genreDbStorage.getGenres(id);
+    public List<Genre> getGenresByFilmId(Integer id) {
+        return genreDbStorage.getGenresByFilmId(id);
     }
 }

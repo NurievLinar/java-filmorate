@@ -41,9 +41,9 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Film> getFilm(@PathVariable int id) {
+    public ResponseEntity<Film> getFilmById(@PathVariable int id) {
         log.info("Получение фильма");
-        return new ResponseEntity<>(filmService.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(filmService.getFilmById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/like/{userId}")

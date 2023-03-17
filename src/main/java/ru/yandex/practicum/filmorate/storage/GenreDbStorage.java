@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,25 +31,19 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public List<Genre> getGenres(Integer idFilm) {
-        log.info("FilmDbStorage. getGenres");
-        String sqlQuery = String.format("SELECT GENRE_ID\n" +
-                "FROM FILM_TO_GENRE\n" +
+    public List<Genre> getGenresByFilmId(Integer idFilm) {
+        log.info("FilmDbStorage. getGenresByFilmId");
+        String sqlQuery = String.format("SELECT GENRE.GENRE_ID,\n" +
+                "GENRE.GENRE_NAME\n" +
+                "FROM FILM_TO_GENRE JOIN GENRE ON GENRE.GENRE_ID = FILM_TO_GENRE.GENRE_ID\n" +
                 "WHERE FILM_ID = %d", idFilm);
-        List<Integer> idGenres = jdbcTemplate.queryForList(sqlQuery, Integer.class);
-        List<Genre> genres = new ArrayList<>();
-        for (Integer id : idGenres) {
-            genres.add(new Genre(id, getById(id)));
-        }
-
-        return genres;
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
     @Override
     public List<Genre> getAll() {
         log.info("GenreDbStorage. findAll.");
         String sqlQuery = "SELECT GENRE_ID, GENRE_NAME FROM GENRE";
-
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 

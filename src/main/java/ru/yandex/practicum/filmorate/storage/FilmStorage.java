@@ -10,7 +10,7 @@ public interface FilmStorage {
 
     List<Film> getFilms();
 
-    Film getById(Integer id);
+    Film getFilmById(Integer id);
 
     Integer addFilm(Film film);
 

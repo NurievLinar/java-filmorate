@@ -61,7 +61,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getById(Integer id) {
+    public Film getFilmById(Integer id) {
         log.info("FilmDbStorage. findById id: {}", id);
         String sqlQuery = "SELECT FILMS.FILM_ID, FILMS.FILM_NAME, FILMS.FILM_DESCRIPTION," +
                 "FILMS.FILM_RELEASE_DATE, FILMS.FILM_DURATION, FILMS.FILM_RATE, FILMS.FILM_RATE_AND_LIKES, " +
@@ -140,7 +140,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Список популярных фильмов пуст");
         }
         for (Integer id : IdFilms) {
-            mostPopularFilms.add(getById(id));
+            mostPopularFilms.add(getFilmById(id));
         }
         return mostPopularFilms;
     }

@@ -11,5 +11,5 @@ public interface GenreStorage {
 
     String getById(Integer id);
 
-    List<Genre> getGenres(Integer filmId);
+    List<Genre> getGenresByFilmId(Integer filmId);
 }
