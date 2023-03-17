@@ -73,7 +73,7 @@ class FilmTests {
 
         filmDbStorage.updateFilm(updateFilm);
 
-        Film filmDbStorageFilm = filmDbStorage.getById(1);
+        Film filmDbStorageFilm = filmDbStorage.getFilmById(1);
 
         assertEquals(updateFilm.getId(),filmDbStorageFilm.getId());
         assertEquals(updateFilm.getName(),filmDbStorageFilm.getName());
@@ -106,7 +106,7 @@ class FilmTests {
     }
 
     void checkFindFilmById(Integer idFilm) {
-        Film filmOptional = filmDbStorage.getById(idFilm);
+        Film filmOptional = filmDbStorage.getFilmById(idFilm);
 
         assertEquals(filmOptional.getId(),idFilm);
 
