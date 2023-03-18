@@ -115,34 +115,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> mostPopulars(Integer limit) {
-        log.info("FilmDbStorage. mostPopulars. limit: {}", limit);
-        List<Film> allFilms = getFilms();
-        for (Film film : allFilms) {
-            String sqlQueryFindLike = String.format("" +
-                    "SELECT COUNT(*)\n" +
-                    "FROM USER_LIKE_FILM\n" +
-                    "WHERE FILM_ID = %d", film.getId());
-            List<Integer> countLikeToFilm = jdbcTemplate.queryForList(sqlQueryFindLike, Integer.class);
-            film.setRateAndLikes(film.getRating() + countLikeToFilm.get(0));
-            String sqlQueryUpdateFilm = "update FILMS set " +
-                    "FILM_RATE_AND_LIKES = ? " +
-                    "where FILM_ID = ?";
-            jdbcTemplate.update(sqlQueryUpdateFilm
-                    , film.getRateAndLikes()
-                    , film.getId());
-        }
-
-        List<Film> mostPopularFilms = new ArrayList<>();
-        String sqlQuery = String.format("SELECT FILM_ID\n" +
-                "    FROM FILMS ORDER BY FILM_RATE_AND_LIKES DESC LIMIT %d", limit);
-        List<Integer> IdFilms = jdbcTemplate.queryForList(sqlQuery, Integer.class);
-        if (IdFilms.isEmpty()) {
-            throw new NotFoundException("Список популярных фильмов пуст");
-        }
-        for (Integer id : IdFilms) {
-            mostPopularFilms.add(getFilmById(id));
-        }
-        return mostPopularFilms;
+        String query = " SELECT FILMS.FILM_ID, FILMS.FILM_NAME, FILMS.MPA_ID, FILMS.FILM_DESCRIPTION, FILMS.FILM_RELEASE_DATE, FILMS.FILM_DURATION, " +
+                " FILMS.FILM_RATE,  FILMS.FILM_RATE_AND_LIKES, MPA.MPA_ID, MPA.MPA_NAME " +
+                " FROM FILMS JOIN MPA ON FILMS.MPA_ID = MPA.MPA_ID " +
+                " LEFT JOIN USER_LIKE_FILM AS UL on FILMS.FILM_ID = UL.FILM_ID GROUP BY FILMS.FILM_ID, UL.FILM_ID IN " +
+                "(SELECT FILM_ID FROM USER_LIKE_FILM) ORDER BY COUNT(UL.FILM_ID) DESC LIMIT ?";
+        return jdbcTemplate.query(query, this::mapRowToFilm, limit);
     }
 
     @Override
@@ -192,7 +170,23 @@ public class FilmDbStorage implements FilmStorage {
                 , new ArrayList<>());
         film.setId(resultSet.getInt("FILM_ID"));
         film.setRateAndLikes(getRateAndLikeFilm(film.getId()));
+        film.setGenres(getGenresByFilmId(film.getId()));
+        System.out.println(film);
         return film;
+    }
+
+    private List<Genre> getGenresByFilmId(Integer idFilm) {
+        String sqlQuery = String.format("SELECT GENRE.GENRE_ID,\n" +
+                "GENRE.GENRE_NAME\n" +
+                "FROM FILM_TO_GENRE JOIN GENRE ON GENRE.GENRE_ID = FILM_TO_GENRE.GENRE_ID\n" +
+                "WHERE FILM_ID = %d", idFilm);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
+    }
+
+    private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
+        log.info("GenreDbStorage. mapRowToGenre.");
+        return new Genre(resultSet.getInt("GENRE_ID")
+                , resultSet.getString("GENRE_NAME"));
     }
 
     public Film insertFilmGenre(Film film) {

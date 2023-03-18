@@ -18,11 +18,7 @@ public class FilmService {
 
 
     public List<Film> getFilms() {
-        var result = filmDbStorage.getFilms();
-        for (Film film : result) {
-            film.setGenres(genreService.getGenresByFilmId(film.getId()));
-        }
-        return result;
+        return filmDbStorage.getFilms();
     }
 
     public Film getFilmById(Integer id) {
